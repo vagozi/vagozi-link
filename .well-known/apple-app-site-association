@@ -1,0 +1,10 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["FAKETEAMID.com.vagozi.trip.expense.plan"],
+        "components": [{ "/": "/i/*", "comment": "Invite links (spike)" }]
+      }
+    ]
+  }
+}
