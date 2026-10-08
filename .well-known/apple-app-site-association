@@ -3,7 +3,12 @@
     "details": [
       {
         "appIDs": ["FAKETEAMID.com.vagozi.trip.expense.plan"],
-        "components": [{ "/": "/i/*", "comment": "Invite links (spike)" }]
+        "components": [
+          {
+            "/": "/i/*",
+            "comment": "Invite links open the Vagozi app"
+          }
+        ]
       }
     ]
   }

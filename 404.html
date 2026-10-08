@@ -1,4 +1,144 @@
-<!doctype html>
-<meta charset="utf-8">
-<title>Vagozi invite (spike)</title>
-<p>Invite fallback (spike page).</p>
+<!DOCTYPE html>
+<!--
+  The fallback page for invite links. GitHub Pages serves this file for every
+  path it has no file for, with status 404, so an invite link (/i/<token>)
+  lands here when the app isn't installed (an installed app opens the link
+  without loading it). It reads its own path: an invite link shows the invite
+  and Open in Vagozi; any other path, that the page doesn't exist. Static: no
+  API call, nothing from another origin.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="robots" content="noindex" />
+    <title>You're invited to a trip on Vagozi</title>
+    <style>
+      /* The app's colours. */
+      * {
+        box-sizing: border-box;
+      }
+      [hidden] {
+        display: none !important;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px 16px;
+        background: #f6f7f9;
+        color: #0e1b3d;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+          'Helvetica Neue', Arial, sans-serif;
+        font-size: 17px;
+        line-height: 1.5;
+      }
+      main {
+        width: 100%;
+        max-width: 420px;
+        padding: 32px 24px;
+        background: #ffffff;
+        border: 1px solid #e3e7ee;
+        border-radius: 20px;
+        text-align: center;
+      }
+      .brand {
+        margin: 0 0 24px;
+        color: #1c4fc0;
+        font-size: 22px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+      }
+      h1 {
+        margin: 0 0 12px;
+        font-size: 26px;
+        line-height: 1.25;
+      }
+      p {
+        margin: 0 0 16px;
+      }
+      .muted {
+        color: #5b6478;
+        font-size: 15px;
+      }
+      .button {
+        display: block;
+        margin-top: 24px;
+        padding: 14px 20px;
+        border-radius: 14px;
+        background: #1c4fc0;
+        color: #ffffff;
+        font-weight: 700;
+        text-decoration: none;
+      }
+      .stores a {
+        display: block;
+        margin-top: 12px;
+        color: #1c4fc0;
+        font-weight: 700;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="brand">Vagozi</p>
+      <!-- Shown until the script reads the path, so the invite reads right without it. -->
+      <section id="invite">
+        <h1>You're invited to a trip on Vagozi</h1>
+        <p>Vagozi is coming soon to the App Store and Google Play.</p>
+        <p class="muted">
+          Once you have it, tap the link in your text again, or sign up with the
+          phone number this invite was sent to: your invite will be waiting on
+          your Home screen.
+        </p>
+        <div id="stores" class="stores" hidden></div>
+        <!-- Hidden until the script finds a valid token in the path. -->
+        <a id="open" class="button" hidden>Open in Vagozi</a>
+      </section>
+      <section id="not-found" hidden>
+        <h1>This page doesn't exist</h1>
+        <p class="muted">
+          If someone invited you to a trip, tap the link in their text again.
+        </p>
+        <a class="button" href="https://vagozi.com">Go to vagozi.com</a>
+      </section>
+    </main>
+    <script>
+      // The store listings, once they exist: each shows as a link only while
+      // its URL is set.
+      const STORES = [
+        { label: 'Download on the App Store', url: '' },
+        { label: 'Get it on Google Play', url: '' },
+      ];
+      // An invite link's path: the token as the app's inviteTokenSchema takes
+      // it (43 base64url characters), a trailing slash allowed.
+      const INVITE_PATH = /^\/i\/([A-Za-z0-9_-]{43})\/?$/;
+
+      const invite = INVITE_PATH.exec(window.location.pathname);
+      if (invite) {
+        // Opens the app when it's installed but the link opened here anyway.
+        // Built only from the matched token, and set as an attribute.
+        const open = document.getElementById('open');
+        open.setAttribute('href', 'vagozi://i/' + invite[1]);
+        open.hidden = false;
+        const stores = document.getElementById('stores');
+        for (const store of STORES) {
+          if (store.url) {
+            const link = document.createElement('a');
+            link.setAttribute('href', store.url);
+            link.textContent = store.label;
+            stores.appendChild(link);
+            stores.hidden = false;
+          }
+        }
+      } else {
+        document.getElementById('invite').hidden = true;
+        document.getElementById('not-found').hidden = false;
+        document.title = 'Vagozi';
+      }
+    </script>
+  </body>
+</html>
