@@ -7,6 +7,10 @@
           {
             "/": "/i/*",
             "comment": "Invite links open the Vagozi app"
+          },
+          {
+            "/": "/t/*",
+            "comment": "Trip links open the Vagozi app"
           }
         ]
       }

@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <!--
-  The fallback page for invite links. GitHub Pages serves this file for every
-  path it has no file for, with status 404, so an invite link (/i/<token>)
-  lands here when the app isn't installed (an installed app opens the link
-  without loading it). It reads its own path: an invite link shows the invite
-  and Open in Vagozi; any other path, that the page doesn't exist. Static: no
-  API call, nothing from another origin.
+  The fallback page for invite and trip links. GitHub Pages serves this file
+  for every path it has no file for, with status 404, so an invite link
+  (/i/<token>) or a trip link from a notification email (/t/<tripId>/settle
+  or /unlock) lands here when the app isn't installed (an installed app opens
+  the link without loading it). It reads its own path: an invite link shows
+  the invite and Open in Vagozi, a trip link the trip's Open in Vagozi; any
+  other path, that the page doesn't exist. Static: no API call, nothing from
+  another origin.
 -->
 <html lang="en">
   <head>
@@ -98,6 +100,16 @@
         <!-- Hidden until the script finds a valid token in the path. -->
         <a id="open" class="button" hidden>Open in Vagozi</a>
       </section>
+      <section id="trip" hidden>
+        <h1>Open this trip in the Vagozi app</h1>
+        <p>Vagozi is coming soon to the App Store and Google Play.</p>
+        <p class="muted">
+          Once you have it, log in and tap the button in your email again.
+        </p>
+        <div id="trip-stores" class="stores" hidden></div>
+        <!-- Hidden until the script finds a valid trip link in the path. -->
+        <a id="trip-open" class="button" hidden>Open in Vagozi</a>
+      </section>
       <section id="not-found" hidden>
         <h1>This page doesn't exist</h1>
         <p class="muted">
@@ -116,15 +128,21 @@
       // An invite link's path: the token as the app's inviteTokenSchema takes
       // it (43 base64url characters), a trailing slash allowed.
       const INVITE_PATH = /^\/i\/([A-Za-z0-9_-]{43})\/?$/;
+      // A trip link's path (a notification email's button): the trip's id as
+      // the app's idSchema takes it (a uuid, its version 1-8 and variant
+      // spelled out, without zod's nil and max ids), then settle or unlock, a
+      // trailing slash allowed, in any case (the app lowercases both).
+      const TRIP_PATH =
+        /^\/t\/([0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})\/(settle|unlock)\/?$/i;
 
-      const invite = INVITE_PATH.exec(window.location.pathname);
-      if (invite) {
-        // Opens the app when it's installed but the link opened here anyway.
-        // Built only from the matched token, and set as an attribute.
-        const open = document.getElementById('open');
-        open.setAttribute('href', 'vagozi://i/' + invite[1]);
+      // Opens the app when it's installed but the link opened here anyway:
+      // the section's Open in Vagozi, its href built only from the matched
+      // path and set as an attribute, and the store links under the copy.
+      const offer = (openId, storesId, href) => {
+        const open = document.getElementById(openId);
+        open.setAttribute('href', href);
         open.hidden = false;
-        const stores = document.getElementById('stores');
+        const stores = document.getElementById(storesId);
         for (const store of STORES) {
           if (store.url) {
             const link = document.createElement('a');
@@ -134,6 +152,21 @@
             stores.hidden = false;
           }
         }
+      };
+
+      const invite = INVITE_PATH.exec(window.location.pathname);
+      const trip = TRIP_PATH.exec(window.location.pathname);
+      if (invite) {
+        offer('open', 'stores', 'vagozi://i/' + invite[1]);
+      } else if (trip) {
+        document.getElementById('invite').hidden = true;
+        document.getElementById('trip').hidden = false;
+        document.title = 'Open this trip in Vagozi';
+        offer(
+          'trip-open',
+          'trip-stores',
+          'vagozi://t/' + trip[1].toLowerCase() + '/' + trip[2].toLowerCase(),
+        );
       } else {
         document.getElementById('invite').hidden = true;
         document.getElementById('not-found').hidden = false;
