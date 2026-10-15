@@ -5,6 +5,9 @@
       "namespace": "android_app",
       "package_name": "com.vagozi.trip.expense.plan",
       "sha256_cert_fingerprints": [
+        "E8:34:70:F2:C5:C2:F3:9B:1D:12:D9:C4:74:C7:78:73:97:4B:DB:6D:A7:71:A9:76:28:AD:F1:36:2B:D4:5E:97",
+        "7C:2A:3F:B3:B5:6A:49:9B:64:C5:58:9E:CD:9A:D1:B4:FE:CF:F7:E5:A8:DA:EC:44:C1:36:94:A9:1E:06:19:89",
+        "43:C0:E2:12:6B:5D:5A:17:0C:6F:E5:CE:47:0C:B0:3A:F6:DD:41:DE:D5:09:12:49:C6:E4:45:0B:9A:86:82:CF",
         "B3:89:10:E3:A1:55:85:91:9C:7F:48:DB:45:89:90:6E:E0:84:1A:DE:51:FB:33:00:AB:01:23:58:0E:D4:BC:9D"
       ]
     }
